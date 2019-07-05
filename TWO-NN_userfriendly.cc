@@ -38,15 +38,21 @@ double DistValue(int i, int j, int N, const vector<double>& Dist, bool TriangSup
 //Find the two nearest neighbors in the case of a file of coordinates
 
 void find_nearest_coo(vector<double>& D1,vector<double>& D2, vector<double>& X, int N, int ncoords, bool periodicB){
-
-	double maxdist=numeric_limits<double>::max();;
-	double L[ncoords];
+	// vector<double>& D1: vector of distance to 1 neighbour for each particle.
+	// vector<double>& D2: vector of distance to 2 neighbour for each particle.
+	// vector<double> X: 1d vector of size N*ncoords. It contains the coordinates of all N particles.
+	// N: number of particles
+	// ncoords: dimension of the embedding space
+	double maxdist=numeric_limits<double>::max();
 	double dist, d1, d2;
+	// L is the hypercube size for periodic boundary conditions	
+	double L[ncoords]; 
 	for(int cc=0; cc<ncoords; cc++){
 	    	L[cc]=1.;  
 	}
 	double Xtemp[ncoords];
 
+	// avoid double loop (can be improved)
 	for(int i=0; i<N; i++){
 		d1=maxdist;
 		d2=maxdist;
@@ -54,7 +60,9 @@ void find_nearest_coo(vector<double>& D1,vector<double>& D2, vector<double>& X, 
 			if(j!=i){
 				dist=0.;
 				for(int cc=0; cc<ncoords; cc++){
+					// .at checks for out of bounds while [] doesn't
 					Xtemp[cc]=X.at(i*ncoords+cc)-X.at(j*ncoords+cc);
+					// check for boundary conditions (can be improved)
 					if(periodicB){
 						if(abs(Xtemp[cc])>L[cc]*0.5) 
 							if(X.at(i*ncoords+cc)>X.at(j*ncoords+cc)) Xtemp[cc]=L[cc]-Xtemp[cc];
@@ -62,13 +70,17 @@ void find_nearest_coo(vector<double>& D1,vector<double>& D2, vector<double>& X, 
 					}
 					dist+=Xtemp[cc]*Xtemp[cc];
 				}
+				// can be avoided and work with dist^2 (can be improved)
 				dist=sqrt(dist); 
 
-				if(dist<d1&&dist<d2){
+				// if dist<d1 I think is automatic that dist<d2 (can be improved)
+				if( dist<d1 && dist<d2 )
+				{
 					d2=d1;
 					d1=dist;
 				}
-				else if(dist>=d1&&dist<d2){
+				else if( dist>=d1 && dist<d2 )
+				{
 				d2=dist;
 				}                   
 			}
@@ -125,10 +137,9 @@ void compute_d(vector<double>& D1, vector<double>& D2, double& dim, int N, doubl
 		NU.push_back(nu);
 	
 		if(nu==1.) cout<<"Point "<<i<<" has the first two neighbors at the same distance!"<<endl;
-
-		
 	}
 
+	// order linearithmic ( N.log_2(N) )
 	sort(NU.begin(), NU.end());
 
 
@@ -138,25 +149,25 @@ void compute_d(vector<double>& D1, vector<double>& D2, double& dim, int N, doubl
   
 	if (nbox==1) // only for the full dataset write the relevant files
 	{
-		ofstream file_rlist("r_list.dat");//file containing the list of distances between the point and 											its first and second neighbor
-		ofstream file_nulist("nu_list.dat");//file containing the list of nu values   
+		ofstream file_rlist("r_list.dat"); // file containing the list of distances between the point and 											its first and second neighbor
+		ofstream file_nulist("nu_list.dat"); // file containing the list of nu values   
 
-		ofstream file_fun("fun.dat"); //file containing the coordinates to plot the S-set
+		ofstream file_fun("fun.dat"); // file containing the coordinates to plot the S-set
 
 		for(int i=0; i<N; i++)
 		{
-	 		XX[i]=log(NU.at(i));
-			YY[i]=-log(1.-double(i)/double(N));
+	 		XX[i] = log(NU.at(i));
+			YY[i] = - log(1.-double(i)/double(N));
 
-			file_fun<<XX[i]<<' '<<YY[i]<<endl;
+			file_fun << XX[i] << ' ' << YY[i] << endl;
 
-			num=D2[i];
-			den=D1[i];
+			num = D2[i];
+			den = D1[i];
 
-			nu=num/den;
+			nu = num/den;
 			
-			file_rlist<<den<<' '<<num<<endl;
-			file_nulist<<nu<<endl;
+			file_rlist << den << ' ' << num << endl;
+			file_nulist << nu << endl;
 		}
 
 		file_fun.close();
@@ -167,8 +178,8 @@ void compute_d(vector<double>& D1, vector<double>& D2, double& dim, int N, doubl
   
 	for(int i=0; i<N; i++)
 	{
-	 	XX[i]=log(NU.at(i));
-		YY[i]=log(1.-double(i)/double(N));
+	 	XX[i] = log(NU.at(i));
+		YY[i] = log(1.-double(i)/double(N));
 	}
 
 	double sumX, sumY, sumXY, sumX2, sumY2, sumErr;
@@ -190,11 +201,11 @@ void compute_d(vector<double>& D1, vector<double>& D2, double& dim, int N, doubl
 
 	for(int i=0; i<Ncut; i++)
 	{
-		sumX+=XX[i];
-		sumY+=YY[i];
-		sumXY+=XX[i]*YY[i];
-		sumX2+=XX[i]*XX[i]; 
-		sumY2+=YY[i]*YY[i];     
+		sumX += XX[i];
+		sumY += YY[i];
+		sumXY += XX[i] * YY[i];
+		sumX2 += XX[i] * XX[i]; 
+		sumY2 += YY[i] * YY[i];     
 	}
   
 	dim=-sumXY/sumX2;  //fit formula with the straight line through the origin a*x
