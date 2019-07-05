@@ -1,8 +1,0 @@
-set key top right box lw 1  lc rgb "#7F7F7F" font ",10" spacing 10
-set border 4095 lw 1 lc rgb "#7F7F7F" 
-set grid lw 1
-set yrange[11:31]
-set title "block analysis datasets/cauchy20" font ",20"
-set xlabel "N" font ",15"
-set ylabel "d" font ",15" rotate by 0
-p 'block_analysis.dat' u 1:2 w lp lw 2 lc rgb "#DC143C" not, '' u 1:2:3 w e lc rgb "#DC143C" not, 21.9663 lw 2 lc rgb "#00BFFF" t "  full dataset dimension"
