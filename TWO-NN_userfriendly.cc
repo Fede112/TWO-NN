@@ -208,9 +208,9 @@ void compute_d(vector<double>& D1, vector<double>& D2, double& dim, int N, doubl
 		sumY2 += YY[i] * YY[i];     
 	}
   
-	dim=-sumXY/sumX2;  //fit formula with the straight line through the origin a*x
+	dim = -sumXY / sumX2;  // fit formula with the straight line through the origin a*x
 
-	double minval=sqrt(sumY2-sumXY*sumXY/sumX2)/double(Ncut);
+	double minval = sqrt( sumY2 - sumXY*sumXY / sumX2 ) / double( Ncut );
 
 	if (nbox==1) cout<< "estimated dimension= "<<dim<<' '<<endl;
 
