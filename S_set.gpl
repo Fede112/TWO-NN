@@ -1,4 +1,4 @@
 set key top left box lw 1  lc rgb "#7F7F7F" font ",10" spacing 5
 set border 4095 lw 1 lc rgb "#7F7F7F" 
 set title "S set datasets/cauchy20" font ",20"
-p 'fun.dat' lc rgb "#7F7F7F" pt 7 not, "<head -2250 'fun.dat'" lc rgb "#DC143C" pt 7 t "S set", 21.97*x lw 2 lc rgb "#00BFFF" t " 21.97*x"
+p 'fun.dat' lc rgb "#7F7F7F" pt 7 not, "<head -2250 'fun.dat'" lc rgb "#DC143C" pt 7 t "S set", 21.89*x lw 2 lc rgb "#00BFFF" t " 21.89*x"
