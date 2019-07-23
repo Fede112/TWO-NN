@@ -45,11 +45,24 @@ def arr_two_nn(array):
 			first = val
 		elif val < second and second != first:
 			second = val
-	return np.sqrt(first), np.sqrt(second)
+	return first, second
 
 
 
-def two_nn_id(data, frac = .9):
+
+
+def calc_two_nn(dist_mat2):
+	r1_arr = []
+	r2_arr = []
+	for row in dist_mat2:
+		first, second = arr_two_nn(row)
+		r1_arr.append(np.sqrt(first))
+		r2_arr.append(np.sqrt(second))
+	return np.array(r1_arr), np.array(r2_arr)
+
+
+
+def two_nn_id(r1, r2, frac = .9):
 	"""
 	Computes the intrinsic dimension of a given dataset using the TWO-NN algorithm.
 	:param data: dataset as a 2d numpy array.
@@ -65,16 +78,7 @@ def two_nn_id(data, frac = .9):
 		N_frac = 1
 	assert N_frac <= N_samples and N_frac > 0, 'Frac must be a real number between 0 and 1.'
 
-	d_mat = dist_mat(data, eucl_dist2)
-
-	first_arr = []
-	second_arr = []
-	for row in d_mat:
-		first, second = arr_two_nn(row)
-		first_arr.append(first)
-		second_arr.append(second)
-
-	mu = np.array(second_arr)/np.array(first_arr)
+	mu = np.array(r2)/np.array(r1)
 
 	# mu is sorted
 	mu, mu_cs = cum_sum(mu)
@@ -112,17 +116,25 @@ def cum_sum(x):
 	return x_sort, p
 
 
-def two_nn_block_analysis(data, frac, num_blocks = 2):
+def two_nn_block_analysis(data, frac, index, num_blocks = 2):
 	"""
 	Separate the
 	:param num_blocks: number of different block sizes to do the scale analysis. \
 	If num_blocks = 5, you are scaling down the dataset up to 20% of its original size.
 	"""
+	print(index[:10])
+
+
 	N_samples = data.shape[0]
 	blocks_dim_avg = []
 	blocks_dim_std = []
 	blocks_dim_lst = np.arange(1, num_blocks+1)
 	# nblock_l = np.linspace(1, num_blocks, num_blocks)
+
+
+
+	d_mat2 = dist_mat(data, eucl_dist2)
+	r1, r2 = calc_two_nn(d_mat2)
 
 	for nblock in range(1, num_blocks+1):
 		# index = np.arange(N_samples, dtype = int)
@@ -138,7 +150,13 @@ def two_nn_block_analysis(data, frac, num_blocks = 2):
 	 		# Define global row index i
 			start = j * (int_div + 1) - int((nblock - rem + j)/nblock) * (j-rem)
 
-			dim.append(two_nn_id(data[index[int(start):int(start+size)].astype(int)], frac))
+			# dim.append(		two_nn_id( r1[	index[int(start):int(start+size)].astype(int)	],
+				# r2[	index[int(start):int(start+size)].astype(int)	], frac) 	)
+
+			r1_loc = r1[ index[int(start):int(start+size)].astype(int) ]
+			r2_loc = r2[ index[int(start):int(start+size)].astype(int) ]
+			dim.append(	two_nn_id( r1_loc, r2_loc, frac ) )
+
 		blocks_dim_avg.append(np.mean(dim))
 		blocks_dim_std.append(np.std(dim))
 	return blocks_dim_avg, blocks_dim_std, N_samples/blocks_dim_lst
@@ -149,7 +167,7 @@ if __name__ == "__main__":
 	data = load_data('./datasets/cauchy20')
 	index = load_data('index.dat')
 	# dim, mu, mu_cs = two_nn_id(data, 0.9)
-	blocks_dim, _, blocks_size = two_nn_block_analysis(data, .9)
+	blocks_dim, _, blocks_size = two_nn_block_analysis(data, .9, index)
 	# print(dim)
 	# plt.plot(mu,mu_cs)
 	# plt.show()
