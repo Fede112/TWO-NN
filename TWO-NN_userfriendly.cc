@@ -417,8 +417,8 @@ int main(int argc, char* argv[])
 
 	// BLOCK ANALYSIS
 
-	// int NBOX[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,20};
-	int NBOX[]={1,2};
+	int NBOX[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,20};
+	// int NBOX[]={1,2};
 
 	ofstream file_ba("block_analysis.dat");
 
@@ -528,32 +528,32 @@ int main(int argc, char* argv[])
 	// block analysis plot
 
 
-	// ofstream file_gpl_ba("block_analysis.gpl");
+	ofstream file_gpl_ba("block_analysis.gpl");
 
-	// file_gpl_ba<< "set key top right box lw 1  lc rgb \"#7F7F7F\" font \",10\" spacing 10" <<endl;
-	// file_gpl_ba<< "set border 4095 lw 1 lc rgb \"#7F7F7F\" " <<endl;
-	// file_gpl_ba<< "set grid lw 1" <<endl;
-	// file_gpl_ba<< "set yrange["<<lower_bound<<":"<<upper_bound<<"]"<<endl; 
-	// file_gpl_ba<< "set title \"block analysis "<<file_in<<"\" font \",20\"" <<endl;
-	// file_gpl_ba<< "set xlabel \"N\" font \",15\"" <<endl;
-	// file_gpl_ba<< "set ylabel \"d\" font \",15\" rotate by 0" <<endl;
-	// file_gpl_ba<< "p \'block_analysis.dat\' u 1:2 w lp lw 2 lc rgb \"#DC143C\" not, '' u 1:2:3 w e lc rgb \"#DC143C\" not, "<< dim_tot<<" lw 2 lc rgb \"#00BFFF\" t \"  full dataset dimension\"" <<endl;
-	// system("gnuplot -persist block_analysis.gpl");
+	file_gpl_ba<< "set key top right box lw 1  lc rgb \"#7F7F7F\" font \",10\" spacing 10" <<endl;
+	file_gpl_ba<< "set border 4095 lw 1 lc rgb \"#7F7F7F\" " <<endl;
+	file_gpl_ba<< "set grid lw 1" <<endl;
+	file_gpl_ba<< "set yrange["<<lower_bound<<":"<<upper_bound<<"]"<<endl; 
+	file_gpl_ba<< "set title \"block analysis "<<file_in<<"\" font \",20\"" <<endl;
+	file_gpl_ba<< "set xlabel \"N\" font \",15\"" <<endl;
+	file_gpl_ba<< "set ylabel \"d\" font \",15\" rotate by 0" <<endl;
+	file_gpl_ba<< "p \'block_analysis.dat\' u 1:2 w lp lw 2 lc rgb \"#DC143C\" not, '' u 1:2:3 w e lc rgb \"#DC143C\" not, "<< dim_tot<<" lw 2 lc rgb \"#00BFFF\" t \"  full dataset dimension\"" <<endl;
+	system("gnuplot -persist block_analysis.gpl");
 
-	// file_gpl_ba.close();
+	file_gpl_ba.close();
 	
-	// // S-set plot
+	// S-set plot
 	
-	// ofstream file_gpl_fun("S_set.gpl");
- //    	file_gpl_fun<<fixed;
-	// file_gpl_fun.precision(2);
-	// file_gpl_fun<< "set key top left box lw 1  lc rgb \"#7F7F7F\" font \",10\" spacing 5" <<endl;
-	// file_gpl_fun<< "set border 4095 lw 1 lc rgb \"#7F7F7F\" " <<endl; 
-	// file_gpl_fun<< "set title \"S set "<<file_in<<"\" font \",20\"" <<endl;
-	// file_gpl_fun<< "p \'fun.dat\' lc rgb \"#7F7F7F\" pt 7 not, "<<"\"<head -"<<N_retained<<" 'fun.dat'\" lc rgb \"#DC143C\" pt 7 t \"S set\", "<<dim_tot<<"*x"<<" lw 2 lc rgb \"#00BFFF\" t \" "<<dim_tot<<"*x\"" <<endl;
-	// system("gnuplot -persist S_set.gpl");
+	ofstream file_gpl_fun("S_set.gpl");
+    	file_gpl_fun<<fixed;
+	file_gpl_fun.precision(2);
+	file_gpl_fun<< "set key top left box lw 1  lc rgb \"#7F7F7F\" font \",10\" spacing 5" <<endl;
+	file_gpl_fun<< "set border 4095 lw 1 lc rgb \"#7F7F7F\" " <<endl; 
+	file_gpl_fun<< "set title \"S set "<<file_in<<"\" font \",20\"" <<endl;
+	file_gpl_fun<< "p \'fun.dat\' lc rgb \"#7F7F7F\" pt 7 not, "<<"\"<head -"<<N_retained<<" 'fun.dat'\" lc rgb \"#DC143C\" pt 7 t \"S set\", "<<dim_tot<<"*x"<<" lw 2 lc rgb \"#00BFFF\" t \" "<<dim_tot<<"*x\"" <<endl;
+	system("gnuplot -persist S_set.gpl");
 
-	// file_gpl_fun.close();
+	file_gpl_fun.close();
 		
 	return 0;
 

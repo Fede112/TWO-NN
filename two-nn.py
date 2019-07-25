@@ -63,7 +63,7 @@ def calc_two_nn(dist_mat2):
 	r1_arr = []
 	r2_arr = []
 	for row in dist_mat2:
-		first, second = arr_two_min(row)
+		first, second = arr_two_minval(row)
 		r1_arr.append(np.sqrt(first))
 		r2_arr.append(np.sqrt(second))
 	return np.array(r1_arr), np.array(r2_arr)
@@ -129,7 +129,7 @@ def cum_sum(x):
 	return x_sort, p
 
 
-def two_nn_block_analysis(data, frac, num_blocks = 2, shuffle = False):
+def two_nn_block_analysis(data, frac, num_blocks = 20, shuffle = False):
 	"""
 	Scale analysis of the two_nn_id algorithm. It takes num_blocks subsamples of data
 	and performs the algorithm for each. The size of each subsample is N_samples/i, with i
@@ -140,9 +140,9 @@ def two_nn_block_analysis(data, frac, num_blocks = 2, shuffle = False):
 
 	# shuffle
 	if shuffle:
-		np.random.shuffle( data )
-		# index = load_data('index.dat')
-		# data = data[index.astype(int)]
+		# np.random.shuffle( data )
+		index = load_data('index.dat')
+		data = data[index.astype(int)]
 
 
 	N_samples = data.shape[0]
@@ -174,7 +174,8 @@ def two_nn_block_analysis(data, frac, num_blocks = 2, shuffle = False):
 
 			r1, r2 = calc_two_nn( d_mat2[ int(start):int(start+size),int(start):int(start+size) ] )
 
-			dim.append(	two_nn_id( r1, r2, frac ) )
+			dim_block, _, _ = two_nn_id( r1, r2, frac )
+			dim.append(	dim_block )
 
 		blocks_dim_avg.append(np.mean(dim))
 		blocks_dim_std.append(np.std(dim))
@@ -192,5 +193,5 @@ if __name__ == "__main__":
 
 	blocks_dim, _, blocks_size = two_nn_block_analysis(data, .9, shuffle = True)
 
-	# plt.plot(blocks_size, blocks_dim)
-	# plt.show()
+	plt.plot(blocks_size, blocks_dim, "r.-")
+	plt.show()
