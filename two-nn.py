@@ -140,9 +140,9 @@ def two_nn_block_analysis(data, frac, num_blocks = 20, shuffle = False):
 
 	# shuffle
 	if shuffle:
-		# np.random.shuffle( data )
-		index = load_data('index.dat')
-		data = data[index.astype(int)]
+		np.random.shuffle( data )
+		# index = load_data('index.dat')
+		# data = data[index.astype(int)]
 
 
 	N_samples = data.shape[0]
