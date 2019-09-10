@@ -1,3 +1,8 @@
+"""
+dist_mat has a slow implementation because it calls metric() several time.
+Is there a way to inline in python?
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -49,12 +54,19 @@ def dist_mat_bis(data):
     """
     N_samples = data.shape[0]
     N_coord = data.shape[1]
+    data = data.astype(np.float64)
     dist_mat = np.zeros((N_samples, N_samples))
     for i in tqdm(range(N_samples)):
         dist_mat[i,i] = float("inf")
         for j in range(i+1,N_samples):
             # dist_mat[i,j] = metric(data[i,:], data[j,:])
-            dist_mat[i,j] = np.sum((data[i,:] - data[j,:])**2)
+            tmp = (data[i,:] - data[j,:])**2
+            dist_mat[i,j] = np.sum(tmp)
+            if dist_mat[i,j] < 0:
+                print(data.dtype)
+                print(tmp.dtype  )
+                print('negative value!')
+                print(dist_mat[i,j])
             dist_mat[j,i] = dist_mat[i,j]
     return dist_mat
 
@@ -101,6 +113,9 @@ def calc_two_nn(dist_mat2):
     r2_arr = []
     for row in dist_mat2:
         first, second = arr_two_minval(row)
+        if second < 0:
+            # print(second)
+            break
         r1_arr.append(np.sqrt(first))
         r2_arr.append(np.sqrt(second))
     return np.array(r1_arr), np.array(r2_arr)
@@ -119,7 +134,7 @@ def two_nn_id(r1_arr, r2_arr, frac = .9):
     N_samples = r1_arr.shape[0]
     # print(f"N_samples: {N_samples}")
     N_frac = int(N_samples*frac)
-    print(f'N_frac: {N_frac}')
+    # print(f'N_frac: {N_frac}')
     if N_frac == 0:
         N_frac = 1
     assert N_frac <= N_samples and N_frac > 0, 'Frac must be a real number between 0 and 1.'
@@ -133,7 +148,7 @@ def two_nn_id(r1_arr, r2_arr, frac = .9):
     # linearize the equation F(mu) = (1-mu**(-d))
     y = - np.log(1-mu_cs)[:N_frac]
     x = np.log(mu)[:N_frac]
-    print(f'len x: {len(x)}')
+    # print(f'len x: {len(x)}')
 
     # Linear regression with intercept = 0
     dim = np.sum(x*y) / np.sum(x*x)
@@ -141,12 +156,12 @@ def two_nn_id(r1_arr, r2_arr, frac = .9):
     # x = x[:,np.newaxis]
     # dim, _, _, _ = np.linalg.lstsq(x, y, rcond=None)
 
-    print(dim)
+    # print(dim)
     return dim, x, y
 
 
 def eucl_dist2(x,y):
-    """ Computes the euclidean distance between two points"""
+    """ Computes the squared euclidean distance between two points"""
     return sum((x - y)**2)
 
 
@@ -206,7 +221,7 @@ def two_nn_block_analysis(data, frac, num_blocks = 20, shuffle = False):
 
         dim = []
         for j in range(nblock):
-            # Divide data points in such that localy: rows = rows_loc ; cols = dim
+            # Divide data points such that locally: rows = rows_loc ; cols = dim
             size = int_div + 1 - int((nblock - rem + j)/nblock) # it distributes the remainder in a round robin way starting from j = 0. 
             # Not the easiest way of doing it, but I wanted to try without the if().            
             # Define global row index i
@@ -222,7 +237,7 @@ def two_nn_block_analysis(data, frac, num_blocks = 20, shuffle = False):
 
         blocks_dim_avg.append(np.mean(dim))
         blocks_dim_std.append(np.std(dim))
-    return blocks_dim_avg, blocks_dim_std, N_samples/blocks_dim_lst
+    return blocks_dim_avg, blocks_dim_std, N_samples/blocks_dim_lst, d_mat2
 
 
 
@@ -255,6 +270,7 @@ if __name__ == "__main__":
     plt.plot(blocks_size, blocks_dim, "r.-")
     plt.errorbar(blocks_size, blocks_dim, fmt = "r.-", yerr = np.array(blocks_dim_std))
     plt.show()
+    print(block_dim[-1])
 
 
     ################
